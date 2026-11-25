@@ -7,10 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { TransactionsService } from '../../services/transactions';
 import { CategoriesService } from '../../services/categories';
 import { TransactionList } from '../../components/transaction-list/transaction-list';
+import { TransactionDialog, TransactionDialogData } from '../../components/transaction-dialog/transaction-dialog';
 import { Transaction } from '../../models/transaction.model';
 
 @Component({
@@ -31,6 +33,7 @@ export class Transactions implements OnInit {
   protected readonly transactionsService = inject(TransactionsService);
   protected readonly categoriesService = inject(CategoriesService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialog = inject(MatDialog);
 
   // RxJS Subject for debounced search input
   private readonly searchSubject = new Subject<string>();
@@ -79,8 +82,7 @@ export class Transactions implements OnInit {
   }
 
   protected onEdit(transaction: Transaction): void {
-    // Will be implemented in Step 5 (dialog)
-    console.log('Edit transaction:', transaction.id);
+    this.openDialog(transaction);
   }
 
   protected onDelete(id: string): void {
@@ -88,8 +90,31 @@ export class Transactions implements OnInit {
   }
 
   protected onAdd(): void {
-    // Will be implemented in Step 5 (dialog)
-    console.log('Add transaction');
+    this.openDialog();
+  }
+
+  private openDialog(transaction?: Transaction): void {
+    const data: TransactionDialogData = {
+      categories: this.categoriesService.categories(),
+      transaction,
+    };
+
+    const dialogRef = this.dialog.open(TransactionDialog, {
+      data,
+      width: '500px',
+    });
+
+    dialogRef.afterClosed().subscribe((result: Transaction | undefined) => {
+      if (!result) {
+        return;
+      }
+      if (result.id) {
+        this.transactionsService.updateTransaction(result as Transaction);
+      } else {
+        this.transactionsService.addTransaction(result);
+      }
+      this.buildAvailableMonths();
+    });
   }
 
   private buildAvailableMonths(): void {

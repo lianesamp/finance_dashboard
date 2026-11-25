@@ -97,3 +97,23 @@
 - **`$any()` type assertion in templates**: `$any($event.target).value` casts the event target to bypass strict template type checking. It's the template equivalent of `(event.target as HTMLInputElement).value`. Use sparingly — it's a workaround for cases where Angular's template type checker can't infer the type.
 
 - **`CurrencyPipe` and `DatePipe`**: Angular's built-in pipes for formatting values in templates. `{{ tx.amount | currency: 'EUR' }}` renders "€1,234.56". `{{ tx.date | date: 'mediumDate' }}` renders "Nov 3, 2026". React equivalent: `Intl.NumberFormat` / `Intl.DateTimeFormat` or libraries like `date-fns`. Pipes are Angular's way to transform display values directly in templates.
+
+## Step 5: Transaction Dialog (Reactive Forms + Validation)
+
+- **Reactive Forms (`FormGroup` / `FormControl`)**: Angular's programmatic form model. You define form structure in TypeScript, not in the template. `new FormGroup({ description: new FormControl('') })` creates a form with one field. React equivalent: `react-hook-form`'s `useForm()` or Formik's `useFormik()`. Vue equivalent: VeeValidate. Key advantage: the form is fully typed and testable without rendering any DOM.
+
+- **`Validators`**: Built-in validation functions. `Validators.required`, `Validators.min(0.01)`, etc. You pass them as the second argument to `FormControl`. React equivalent: Zod/Yup schemas with react-hook-form. The CLAUDE.md says "validate with Zod or framework equivalent" — Reactive Forms + Validators is Angular's idiomatic way.
+
+- **Custom validator (`notFutureDate`)**: A function that receives an `AbstractControl` and returns `ValidationErrors | null`. Returns `{ futureDate: true }` if the date is in the future, `null` if valid. This pattern is composable — you can stack multiple validators on one control.
+
+- **`nonNullable: true`**: Makes a FormControl non-nullable — its value is always the initial type, never `null`. Without it, `FormControl<string>` has type `string | null`. With it, the type is just `string`. This avoids null checks when reading form values.
+
+- **`form.getRawValue()`**: Returns all form values including disabled controls. Preferred over `form.value` because `form.value` skips disabled controls. The return type is fully typed based on your FormGroup definition.
+
+- **`form.markAllAsTouched()`**: Marks every control as "touched", which triggers validation error display. Useful when the user clicks "Save" without interacting with any field — all errors show at once. React equivalent: `formState.touchedFields` / `trigger()` in react-hook-form.
+
+- **`MatDialog` / `MatDialogRef`**: Angular Material's dialog service. `dialog.open(TransactionDialog, { data })` opens a dialog and returns a `MatDialogRef`. `dialogRef.afterClosed()` returns an Observable that emits the result when the dialog closes. React equivalent: MUI's `<Dialog>` component with `open`/`onClose` props, but Angular's approach is imperative (service-based) rather than declarative (JSX-based).
+
+- **`MAT_DIALOG_DATA`**: An injection token that provides data to the dialog component. The parent passes `{ data: { categories, transaction } }`, and the dialog injects it with `inject(MAT_DIALOG_DATA)`. React equivalent: passing props to a dialog component.
+
+- **Component testing (dialog)**: Testing a dialog component requires providing `MAT_DIALOG_DATA` and `MatDialogRef` as mock providers in `TestBed`. We test: form initial state, edit mode population, each validation rule, error messages in the DOM, and the submit button disabled state. This is an integration test — it renders actual DOM and checks Material error elements.
