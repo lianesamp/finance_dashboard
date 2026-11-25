@@ -117,3 +117,11 @@
 - **`MAT_DIALOG_DATA`**: An injection token that provides data to the dialog component. The parent passes `{ data: { categories, transaction } }`, and the dialog injects it with `inject(MAT_DIALOG_DATA)`. React equivalent: passing props to a dialog component.
 
 - **Component testing (dialog)**: Testing a dialog component requires providing `MAT_DIALOG_DATA` and `MatDialogRef` as mock providers in `TestBed`. We test: form initial state, edit mode population, each validation rule, error messages in the DOM, and the submit button disabled state. This is an integration test — it renders actual DOM and checks Material error elements.
+
+## Step 6: Categories Page
+
+- **`@empty` block**: Used with `@for` to show fallback content when the array is empty. `@for (cat of categories(); track cat.id) { ... } @empty { <p>No categories</p> }`. React equivalent: `{items.length === 0 ? <Empty /> : items.map(...)}`. Vue equivalent: `v-if="items.length === 0"` on a separate element. The `@empty` block is cleaner — it's declarative and colocated with the loop.
+
+- **`MatCardModule`**: Angular Material's card component for content containers. Used here to display each category as a card in a CSS Grid layout. React equivalent: MUI's `<Card>` component.
+
+- **Reusing patterns**: The CategoryDialog follows the exact same pattern as TransactionDialog — `MAT_DIALOG_DATA` for input, `MatDialogRef.close(result)` for output, `FormGroup` for form state. The CategoriesPage follows the same pattern as TransactionsPage — smart component that opens dialogs, dumb list that emits events. Recognizing and applying patterns is a key skill in Angular development.

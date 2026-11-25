@@ -1,1 +1,13 @@
-<p>categories works!</p>
+<div class="categories-header">
+  <h1>Categories</h1>
+  <button mat-fab extended (click)="onAdd()">
+    <mat-icon>add</mat-icon>
+    Add Category
+  </button>
+</div>
+
+<app-category-list
+  [categories]="categoriesService.categories()"
+  (edit)="onEdit($event)"
+  (delete)="onDelete($event)"
+/>

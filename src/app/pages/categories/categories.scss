@@ -1,0 +1,11 @@
+.categories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font: var(--mat-sys-headline-large);
+    margin: 0;
+  }
+}

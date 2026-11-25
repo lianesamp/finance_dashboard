@@ -1,1 +1,33 @@
-<p>category-list works!</p>
+<div class="category-grid">
+  @for (category of categories(); track category.id) {
+    <mat-card class="category-card">
+      <mat-card-content class="card-content">
+        <mat-icon
+          class="category-icon"
+          [style.color]="category.color"
+        >
+          {{ category.icon }}
+        </mat-icon>
+        <span class="category-name">{{ category.name }}</span>
+        <div class="card-actions">
+          <button
+            mat-icon-button
+            matTooltip="Edit"
+            (click)="edit.emit(category)"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            matTooltip="Delete"
+            (click)="delete.emit(category.id)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  } @empty {
+    <p class="empty-state">No categories yet. Add one to get started.</p>
+  }
+</div>

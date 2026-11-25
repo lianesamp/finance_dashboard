@@ -1,0 +1,39 @@
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.category-card {
+  cursor: default;
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.category-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.category-name {
+  flex: 1;
+  font: var(--mat-sys-title-medium);
+}
+
+.card-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 0;
+  color: var(--mat-sys-on-surface-variant);
+}

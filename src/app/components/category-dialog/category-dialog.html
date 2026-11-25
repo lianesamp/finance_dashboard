@@ -1,1 +1,58 @@
-<p>category-dialog works!</p>
+<h2 mat-dialog-title>{{ isEdit ? 'Edit' : 'Add' }} Category</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <!-- Name -->
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+      @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+        <mat-error>Name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Color picker -->
+    <mat-form-field>
+      <mat-label>Color</mat-label>
+      <input matInput type="color" formControlName="color" />
+    </mat-form-field>
+
+    <!-- Icon selector -->
+    <div class="icon-selector">
+      <label>Icon</label>
+      <div class="icon-grid">
+        @for (icon of availableIcons; track icon) {
+          <button
+            type="button"
+            class="icon-option"
+            [class.selected]="form.get('icon')?.value === icon"
+            [style.color]="form.get('color')?.value"
+            (click)="selectIcon(icon)"
+          >
+            <mat-icon>{{ icon }}</mat-icon>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview">
+      <mat-icon [style.color]="form.get('color')?.value">
+        {{ form.get('icon')?.value }}
+      </mat-icon>
+      <span>{{ form.get('name')?.value || 'Category name' }}</span>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button
+    mat-flat-button
+    type="submit"
+    [disabled]="form.invalid"
+    (click)="onSave()"
+  >
+    {{ isEdit ? 'Save' : 'Add' }}
+  </button>
+</mat-dialog-actions>

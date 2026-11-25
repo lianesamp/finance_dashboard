@@ -1,0 +1,59 @@
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 400px;
+  padding-top: 8px;
+}
+
+.icon-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font: var(--mat-sys-body-small);
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.icon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.icon-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--mat-sys-surface-variant);
+  }
+
+  &.selected {
+    border-color: var(--mat-sys-primary);
+    background-color: var(--mat-sys-secondary-container);
+  }
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: var(--mat-sys-surface-variant);
+  margin-top: 8px;
+
+  span {
+    font: var(--mat-sys-title-medium);
+  }
+}
