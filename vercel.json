@@ -1,5 +1,6 @@
 {
-  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "buildCommand": "npx ng build --configuration production",
   "outputDirectory": "dist/finance_dashboard/browser",
   "framework": null,
   "rewrites": [
