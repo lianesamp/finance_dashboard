@@ -1,6 +1,6 @@
 <div class="categories-header">
   <h1>Categories</h1>
-  <button mat-fab extended (click)="onAdd()">
+  <button mat-fab extended (click)="onAddCategory()">
     <mat-icon>add</mat-icon>
     Add Category
   </button>
@@ -8,6 +8,23 @@
 
 <app-category-list
   [categories]="categoriesService.categories()"
-  (edit)="onEdit($event)"
-  (delete)="onDelete($event)"
+  (edit)="onEditCategory($event)"
+  (delete)="onDeleteCategory($event)"
+/>
+
+<mat-divider class="section-divider" />
+
+<div class="categories-header">
+  <h2>Monthly Budgets ({{ transactionsService.selectedMonth() }})</h2>
+  <button mat-fab extended (click)="onAddBudget()">
+    <mat-icon>add</mat-icon>
+    Add Budget
+  </button>
+</div>
+
+<app-budget-list
+  [budgetStatuses]="budgetsService.budgetStatuses()"
+  [categoryMap]="categoriesService.categoryMap()"
+  (editBudget)="onEditBudget($event)"
+  (deleteBudget)="onDeleteBudget($event)"
 />

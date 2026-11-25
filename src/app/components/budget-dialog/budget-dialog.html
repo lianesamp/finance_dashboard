@@ -1,0 +1,49 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit' : 'Add' }} Budget</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <!-- Category -->
+    <mat-form-field>
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="categoryId" [disabled]="isEdit">
+        @for (cat of data.categories; track cat.id) {
+          <mat-option [value]="cat.id">
+            <mat-icon>{{ cat.icon }}</mat-icon>
+            {{ cat.name }}
+          </mat-option>
+        }
+      </mat-select>
+      @if (form.get('categoryId')?.hasError('required') && form.get('categoryId')?.touched) {
+        <mat-error>Category is required</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Limit -->
+    <mat-form-field>
+      <mat-label>Monthly limit (EUR)</mat-label>
+      <input matInput type="number" formControlName="limit" min="1" step="1" />
+      @if (form.get('limit')?.hasError('required') && form.get('limit')?.touched) {
+        <mat-error>Limit is required</mat-error>
+      } @else if (form.get('limit')?.hasError('min')) {
+        <mat-error>Limit must be at least €1</mat-error>
+      }
+    </mat-form-field>
+
+    <p class="month-info">
+      <mat-icon>calendar_today</mat-icon>
+      Budget for: <strong>{{ data.month }}</strong>
+    </p>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button
+    mat-flat-button
+    type="submit"
+    [disabled]="form.invalid"
+    (click)="onSave()"
+  >
+    {{ isEdit ? 'Save' : 'Add' }}
+  </button>
+</mat-dialog-actions>

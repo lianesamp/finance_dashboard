@@ -139,3 +139,13 @@
 - **`computed()` for chart data**: We use `computed()` to derive `chartData` from service signals (`spendingByCategory`, `categoryMap`). Whenever the service data changes (e.g., user switches month), the chart data recomputes and the chart re-renders. This is reactive by default — no manual subscription needed. React equivalent: `useMemo()` with the data as a dependency.
 
 - **Chart.js `callback` option**: In the bar chart, `ticks.callback: (value) => \`€${value}\`` formats Y-axis labels with the Euro sign. Chart.js options are deeply customizable — colors, legends, scales, tooltips, animations. The options object is plain JS/TS, same across all frameworks.
+
+## Step 8: Budgets with Progress Bars and Warnings
+
+- **`MatProgressBarModule`**: Angular Material's progress bar component. `<mat-progress-bar [value]="75" [color]="'warn'">` renders a horizontal bar filled to 75%. The `color` property accepts `'primary'`, `'accent'`, or `'warn'`. React equivalent: MUI's `<LinearProgress variant="determinate" value={75} />`.
+
+- **Reactive budget statuses**: The `BudgetsService.budgetStatuses` signal is a `computed()` that derives from both `budgets` and `transactionsService.spendingByCategory()`. When you add a transaction or change the month, the budget percentages and warning flags update automatically through the signal dependency chain: transactions → spendingByCategory → budgetStatuses → template. No manual refresh needed. This is the power of signals — derived state stays in sync.
+
+- **`MatDividerModule`**: A simple horizontal line to visually separate sections. `<mat-divider />` renders a `<hr>`-like element styled to match Material Design. Used here to separate Categories from Budgets on the same page.
+
+- **`DecimalPipe`**: Angular's built-in pipe for number formatting. `{{ percentage | number: '1.0-0' }}` formats a number with at least 1 integer digit and 0 decimal places (e.g., 78.6 → "79"). React equivalent: `Math.round(percentage)` or `Intl.NumberFormat`.

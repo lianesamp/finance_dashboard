@@ -4,8 +4,16 @@
   align-items: center;
   margin-bottom: 24px;
 
-  h1 {
+  h1, h2 {
     font: var(--mat-sys-headline-large);
     margin: 0;
   }
+
+  h2 {
+    font: var(--mat-sys-headline-medium);
+  }
+}
+
+.section-divider {
+  margin: 32px 0;
 }

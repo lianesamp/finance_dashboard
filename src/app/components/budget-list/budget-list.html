@@ -1,1 +1,61 @@
-<p>budget-list works!</p>
+@if (budgetStatuses().length === 0) {
+  <p class="empty-state">No budgets set for this month.</p>
+} @else {
+  <div class="budget-grid">
+    @for (status of budgetStatuses(); track status.budget.id) {
+      <mat-card class="budget-card" [class.warning]="status.warning">
+        <mat-card-content>
+          <div class="budget-header">
+            <mat-icon [style.color]="getCategoryColor(status.budget.categoryId)">
+              {{ getCategoryIcon(status.budget.categoryId) }}
+            </mat-icon>
+            <span class="budget-category">
+              {{ getCategoryName(status.budget.categoryId) }}
+            </span>
+            <div class="budget-actions">
+              <button
+                mat-icon-button
+                matTooltip="Edit budget"
+                (click)="editBudget.emit(status)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                matTooltip="Delete budget"
+                (click)="deleteBudget.emit(status.budget.id)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="budget-amounts">
+            <span>{{ status.spent | currency: 'EUR' }}</span>
+            <span class="budget-limit">of {{ status.budget.limit | currency: 'EUR' }}</span>
+          </div>
+
+          <mat-progress-bar
+            [mode]="'determinate'"
+            [value]="status.percentage > 100 ? 100 : status.percentage"
+            [color]="getProgressColor(status.percentage)"
+          />
+
+          <div class="budget-footer">
+            <span class="percentage">{{ status.percentage | number: '1.0-0' }}%</span>
+            @if (status.warning) {
+              <span class="warning-badge">
+                <mat-icon>warning</mat-icon>
+                @if (status.percentage >= 100) {
+                  Over budget!
+                } @else {
+                  Above 80%
+                }
+              </span>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+}
