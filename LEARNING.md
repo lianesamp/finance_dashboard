@@ -27,3 +27,27 @@
 - **Strict mode (`--strict`)**: Enables stricter TypeScript and Angular compiler checks (`noImplicitReturns`, `noFallthroughCasesInSwitch`, `strictInputAccessModifiers`, etc.). React equivalent: `"strict": true` in tsconfig.json.
 
 - **Smart vs presentational components**: Smart components (pages) manage state and talk to services. Presentational (dumb) components receive data via `input()` and emit events via `output()`. React equivalent: container components vs presentational components (same pattern), using props and callbacks.
+
+## Step 2: Routing + Shell
+
+- **`loadComponent` (lazy loading)**: Each route loads its component only when navigated to, using a dynamic `import()`. This creates separate JS chunks (visible in the build output). React equivalent: `React.lazy(() => import('./Dashboard'))` with `<Suspense>`. In Vue: `() => import('./Dashboard.vue')` in vue-router.
+
+- **`<router-outlet>`**: A placeholder directive in the template where Angular renders the matched route's component. React equivalent: `<Outlet />` from react-router v6. Vue equivalent: `<router-view />`.
+
+- **`routerLink` directive**: Used in templates to navigate between routes without a full page reload. `[routerLink]="'/dashboard'"` creates an SPA link. React equivalent: `<Link to="/dashboard">`. Vue equivalent: `<router-link to="/dashboard">`.
+
+- **`routerLinkActive` directive**: Adds a CSS class to an element when its `routerLink` matches the current route. `routerLinkActive="active-link"` adds the class `active-link`. React equivalent: `<NavLink className={({isActive}) => ...}>`. Vue equivalent: vue-router adds `.router-link-active` automatically.
+
+- **`pathMatch: 'full'`**: For the redirect route (`''` → `'dashboard'`), this ensures only an exact empty path redirects. Without it, every route would match (since `''` is a prefix of everything).
+
+- **Wildcard route (`**`)**: Catches any URL that doesn't match a defined route. Must be the last route in the array. Same concept in react-router (`path="*"`) and vue-router (`path: '/:pathMatch(.*)*'`).
+
+- **`@for` (built-in control flow)**: Angular 22's template syntax for loops. `@for (item of items; track item.id) { ... }` replaces the old `*ngFor` directive. The `track` expression is required — it tells Angular how to identify each item for efficient DOM updates (like React's `key` prop in `.map()`). Vue equivalent: `v-for` with `:key`.
+
+- **`{{ title() }}`  (interpolation + signal read)**: Double curly braces render an expression in the template. When reading a signal, you call it as a function: `title()`, not `title`. React equivalent: `{title}` in JSX (no function call needed with `useState`).
+
+- **`MatSidenavModule` / `MatToolbarModule`**: Angular Material components imported per-module. Each Material component has its own module you import in the component's `imports` array. React equivalent: importing `<Drawer>` or `<AppBar>` from MUI, but MUI doesn't require module imports — just component imports.
+
+- **Change detection (zoneless + OnPush)**: In Angular 22, there's no zone.js and OnPush is the default. Angular only re-renders a component when: (1) a signal it reads in the template changes, (2) an `input()` changes, or (3) an event handler fires inside it. React equivalent: this is similar to `React.memo` — components only re-render when their props/state change. The key difference: in React you opt-in to skipping renders (`memo`), in Angular 22 it's the default behavior.
+
+- **CSS system variables (`--mat-sys-*`)**: Angular Material 3 exposes design tokens as CSS custom properties. `--mat-sys-primary`, `--mat-sys-surface`, etc. follow Material Design 3's color system. React/MUI equivalent: `theme.palette.primary.main`.
