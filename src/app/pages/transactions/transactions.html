@@ -1,1 +1,85 @@
-<p>transactions works!</p>
+<div class="transactions-header">
+  <h1>Transactions</h1>
+  <button mat-fab extended (click)="onAdd()">
+    <mat-icon>add</mat-icon>
+    Add Transaction
+  </button>
+</div>
+
+<div class="filters">
+  <!-- Month selector -->
+  <mat-form-field>
+    <mat-label>Month</mat-label>
+    <mat-select
+      [value]="transactionsService.selectedMonth()"
+      (selectionChange)="onMonthChange($event.value)"
+    >
+      @for (month of availableMonths(); track month) {
+        <mat-option [value]="month">{{ month }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Category filter -->
+  <mat-form-field>
+    <mat-label>Category</mat-label>
+    <mat-select
+      [value]="transactionsService.selectedCategoryId() ?? ''"
+      (selectionChange)="onCategoryChange($event.value)"
+    >
+      <mat-option value="">All categories</mat-option>
+      @for (cat of categoriesService.categories(); track cat.id) {
+        <mat-option [value]="cat.id">
+          <mat-icon>{{ cat.icon }}</mat-icon>
+          {{ cat.name }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Search input (debounced) -->
+  <mat-form-field class="search-field">
+    <mat-label>Search description</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      type="text"
+      (input)="onSearchInput($any($event.target).value)"
+    />
+  </mat-form-field>
+
+  <!-- Sort buttons -->
+  <div class="sort-controls">
+    <button
+      mat-stroked-button
+      (click)="onSortChange('date')"
+      [class.active-sort]="transactionsService.sortBy() === 'date'"
+    >
+      Date
+      @if (transactionsService.sortBy() === 'date') {
+        <mat-icon>
+          {{ transactionsService.sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+        </mat-icon>
+      }
+    </button>
+    <button
+      mat-stroked-button
+      (click)="onSortChange('amount')"
+      [class.active-sort]="transactionsService.sortBy() === 'amount'"
+    >
+      Amount
+      @if (transactionsService.sortBy() === 'amount') {
+        <mat-icon>
+          {{ transactionsService.sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+        </mat-icon>
+      }
+    </button>
+  </div>
+</div>
+
+<app-transaction-list
+  [transactions]="transactionsService.filteredTransactions()"
+  [categoryMap]="categoriesService.categoryMap()"
+  (edit)="onEdit($event)"
+  (delete)="onDelete($event)"
+/>

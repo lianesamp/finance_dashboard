@@ -71,3 +71,29 @@
 - **`TestBed` (testing)**: Angular's testing utility that creates a mini Angular environment for tests. `TestBed.configureTestingModule({})` sets up providers, then `TestBed.inject(Service)` gets an instance. React equivalent: there's no built-in — you'd just call `renderHook(() => useMyHook())` with Testing Library. The key idea: Angular services live inside the DI system, so you need TestBed to create them in tests.
 
 - **Test-first approach**: We wrote the tests before implementing the services. Each test describes the expected behavior: "totalIncome for November should be 3400", "filtering by category should show only matching transactions." Then we implemented the services to make all tests pass. This is a form of TDD (Test-Driven Development).
+
+## Step 4: Transactions Page (Smart + Presentational)
+
+- **`input()` and `input.required()`**: Angular's signal-based way to receive data from a parent component. `transactions = input.required<Transaction[]>()` declares a required input. The parent passes it via `[transactions]="data"` in the template. React equivalent: props (`function MyComponent({ transactions }: Props)`). Vue equivalent: `defineProps<{ transactions: Transaction[] }>()`. Key difference: `input()` returns a signal, so you read it with `transactions()`.
+
+- **`output()`**: Angular's way to emit events from a child to its parent. `edit = output<Transaction>()` declares an output; the child calls `this.edit.emit(transaction)` and the parent listens with `(edit)="onEdit($event)"`. React equivalent: callback props (`onEdit: (tx: Transaction) => void`). Vue equivalent: `defineEmits(['edit'])`. The `$event` variable contains the emitted value.
+
+- **Smart vs presentational in action**: `Transactions` (page) is smart — it injects services, manages filters, and handles events. `TransactionList` is dumb — it only receives `input()` data and emits `output()` events. It doesn't know about services or where data comes from. This makes `TransactionList` reusable and easy to test in isolation.
+
+- **RxJS `Subject` + `debounceTime()`**: A `Subject` is like an event emitter you can push values into (`subject.next(value)`) and subscribe to. `debounceTime(300)` waits 300ms after the last emission before passing the value through — prevents firing a search on every keystroke. React equivalent: you'd write a custom `useDebounce` hook with `useEffect` + `setTimeout`. RxJS makes this declarative with pipe operators.
+
+- **`distinctUntilChanged()`**: An RxJS operator that only emits when the value changes. If the user types "abc", deletes "c", then types "c" again (back to "abc"), it won't re-emit. React equivalent: comparing `prevValue !== newValue` in your debounce hook.
+
+- **`takeUntilDestroyed()`**: An Angular RxJS helper that automatically unsubscribes from an Observable when the component is destroyed. Without this, you'd have a memory leak — the subscription would keep running after navigating away. React equivalent: returning a cleanup function from `useEffect`. Vue equivalent: `onUnmounted(() => subscription.unsubscribe())`.
+
+- **`DestroyRef`**: Angular's way to hook into a component's destruction lifecycle. `inject(DestroyRef)` gives you a reference that `takeUntilDestroyed()` uses internally. React equivalent: the cleanup function returned by `useEffect`.
+
+- **`mat-table`**: Angular Material's data table component. You define columns with `<ng-container matColumnDef="name">` and rows with `*matHeaderRowDef` / `*matRowDef`. React/MUI equivalent: `<Table>` / `<TableHead>` / `<TableBody>`. Note: `mat-table` still uses the older `*matCellDef="let tx"` syntax (structural directives), not the new `@for` control flow — this is by design from Angular Material.
+
+- **`[property]="expression"` (property binding)**: Square brackets bind a component property to an expression. `[dataSource]="transactions()"` passes the signal's value to the table. React equivalent: `dataSource={transactions}` in JSX. Vue equivalent: `:data-source="transactions"`.
+
+- **`(event)="handler($event)"` (event binding)**: Parentheses listen for DOM or component events. `(click)="onAdd()"` listens for clicks, `(selectionChange)="onMonthChange($event.value)"` listens for Material select changes. React equivalent: `onClick={() => onAdd()}`. Vue equivalent: `@click="onAdd"`.
+
+- **`$any()` type assertion in templates**: `$any($event.target).value` casts the event target to bypass strict template type checking. It's the template equivalent of `(event.target as HTMLInputElement).value`. Use sparingly — it's a workaround for cases where Angular's template type checker can't infer the type.
+
+- **`CurrencyPipe` and `DatePipe`**: Angular's built-in pipes for formatting values in templates. `{{ tx.amount | currency: 'EUR' }}` renders "€1,234.56". `{{ tx.date | date: 'mediumDate' }}` renders "Nov 3, 2026". React equivalent: `Intl.NumberFormat` / `Intl.DateTimeFormat` or libraries like `date-fns`. Pipes are Angular's way to transform display values directly in templates.

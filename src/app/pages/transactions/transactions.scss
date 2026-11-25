@@ -1,0 +1,46 @@
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font: var(--mat-sys-headline-large);
+    margin: 0;
+  }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+
+  mat-form-field {
+    min-width: 180px;
+  }
+}
+
+.search-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.sort-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 8px;
+
+  .active-sort {
+    background-color: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
