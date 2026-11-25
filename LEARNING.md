@@ -51,3 +51,23 @@
 - **Change detection (zoneless + OnPush)**: In Angular 22, there's no zone.js and OnPush is the default. Angular only re-renders a component when: (1) a signal it reads in the template changes, (2) an `input()` changes, or (3) an event handler fires inside it. React equivalent: this is similar to `React.memo` — components only re-render when their props/state change. The key difference: in React you opt-in to skipping renders (`memo`), in Angular 22 it's the default behavior.
 
 - **CSS system variables (`--mat-sys-*`)**: Angular Material 3 exposes design tokens as CSS custom properties. `--mat-sys-primary`, `--mat-sys-surface`, etc. follow Material Design 3's color system. React/MUI equivalent: `theme.palette.primary.main`.
+
+## Step 3: Services + Signals + Unit Tests
+
+- **`@Service()` decorator**: New in Angular 22, replaces `@Injectable({ providedIn: 'root' })`. It automatically registers the service as a singleton at the root level (available everywhere). React equivalent: there's no decorator — you'd create a context + provider, or use a state management library (Zustand, Redux). Laravel equivalent: services bound in a ServiceProvider.
+
+- **Dependency Injection (DI) + `inject()`**: Angular's DI system creates and provides instances of services automatically. `inject(TransactionsService)` in BudgetsService tells Angular: "give me the existing TransactionsService instance." You don't create instances yourself (`new TransactionsService()`) — Angular manages their lifecycle. React equivalent: `useContext()` to access shared state, but Angular DI is much more powerful — it supports hierarchical injectors, scoped providers, and constructor-level injection. Laravel equivalent: `app()->make(Service::class)` or type-hinting in controller constructors.
+
+- **`signal()` for mutable state**: `signal<Transaction[]>(initialData)` creates a reactive container. Read with `mySignal()`, write with `.set(newValue)` or `.update(fn)`. React equivalent: `const [state, setState] = useState(initialData)`. Key difference: signals are not bound to components — services can own them, and any component reading them in its template will auto-update.
+
+- **`.asReadonly()`**: Exposes a signal that can be read but not written to. The service owns the writable signal (`_transactions`), but consumers only get the read-only version (`transactions`). React equivalent: exporting only the state value from a custom hook, not the setter. This enforces that only the service can modify its own data.
+
+- **`computed()`**: Creates a derived signal that recalculates when its dependencies change. `totalIncome = computed(() => ...)` automatically updates when `monthTransactions()` changes. React equivalent: `useMemo(() => ..., [deps])`. Key difference: `computed()` auto-tracks dependencies (no dependency array needed), while `useMemo` requires you to list them manually.
+
+- **`structuredClone()`**: A native JS function that deep-copies an object. We use it to clone mock data so each test/service gets its own copy. Not Angular-specific — works in any modern JS. React equivalent: same function, or spread/`JSON.parse(JSON.stringify(...))`.
+
+- **`crypto.randomUUID()`**: Native browser API that generates a UUID v4 string. Used for generating unique IDs for new transactions/categories/budgets. Not Angular-specific — works in any modern browser.
+
+- **`TestBed` (testing)**: Angular's testing utility that creates a mini Angular environment for tests. `TestBed.configureTestingModule({})` sets up providers, then `TestBed.inject(Service)` gets an instance. React equivalent: there's no built-in — you'd just call `renderHook(() => useMyHook())` with Testing Library. The key idea: Angular services live inside the DI system, so you need TestBed to create them in tests.
+
+- **Test-first approach**: We wrote the tests before implementing the services. Each test describes the expected behavior: "totalIncome for November should be 3400", "filtering by category should show only matching transactions." Then we implemented the services to make all tests pass. This is a form of TDD (Test-Driven Development).
