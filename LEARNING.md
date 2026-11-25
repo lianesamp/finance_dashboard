@@ -159,3 +159,15 @@
 - **`toBeCloseTo(expected, numDigits)`**: Vitest/Jest matcher for floating-point comparison. `expect(80.0).toBeCloseTo(80, 1)` passes if the difference is less than `10^(-1) / 2 = 0.05`. Essential for financial amounts where floating-point arithmetic (e.g., `85.50 + 32.40`) can produce rounding artifacts. React testing-library uses the same matcher from Jest.
 
 - **`structuredClone()` in services**: Each `beforeEach` creates a fresh service with `structuredClone(MOCK_DATA)`, so CRUD mutations in one test don't leak into the next. Without this, test order would matter — a classic pitfall. React equivalent: re-creating state in each test's `renderHook()` call. The `structuredClone` built-in is like `JSON.parse(JSON.stringify(...))` but handles more types (Dates, Maps, etc.).
+
+## Step 10: Polish, Deploy, and Responsive Design
+
+- **`BreakpointObserver` (CDK)**: Angular CDK's service for detecting viewport breakpoints reactively. `breakpointObserver.observe([Breakpoints.Handset]).pipe(map(r => r.matches))` emits `true`/`false` as the screen crosses the breakpoint. We convert it to a signal with `toSignal()`. React equivalent: a custom `useMediaQuery()` hook with `window.matchMedia`, or MUI's `useMediaQuery`. The CDK approach is cleaner — no manual cleanup, works with SSR.
+
+- **`toSignal()` (rxjs-interop)**: Bridges an RxJS Observable into a Signal. `toSignal(obs$, { initialValue })` subscribes to the observable and exposes its latest value as a signal. It auto-unsubscribes when the component is destroyed. This is the Angular way to convert "push" (Observable) to "pull" (Signal). React equivalent: using a `useSyncExternalStore` wrapper around an observable subscription.
+
+- **`viewChild.required()`**: Angular 22's signal-based query for a child component/directive in the template. `viewChild.required(MatSidenav)` returns a signal holding the `MatSidenav` instance. Unlike `@ViewChild` (decorator-based), this is type-safe and reactive. React equivalent: `useRef<MatSidenav>()` — but Angular's version is a signal, so it integrates with the reactivity system.
+
+- **SPA rewrite rules**: When deploying a client-side routed app, the web server must serve `index.html` for all routes (not just `/`). Otherwise, navigating directly to `/transactions` returns 404. Each host handles this differently: Vercel uses `rewrites` in `vercel.json`, Netlify uses `[[redirects]]` in `netlify.toml`, Apache uses `mod_rewrite` in `.htaccess`. Laravel handles this with a catch-all route (`Route::fallback`). The concept is the same everywhere — it's a "try file, then fall back to index" pattern.
+
+- **`angular.json` assets array**: Tells the Angular build to copy static files into the dist output. By default it copies `public/`. We added `.htaccess` from `src/` so Apache-deployed builds get the rewrite rules automatically. React equivalent: CRA's `public/` folder (anything in it gets copied to the build).

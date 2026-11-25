@@ -1,5 +1,9 @@
 <mat-sidenav-container class="app-container">
-  <mat-sidenav mode="side" opened class="app-sidenav">
+  <mat-sidenav
+    [mode]="isMobile() ? 'over' : 'side'"
+    [opened]="!isMobile()"
+    class="app-sidenav"
+  >
     <div class="sidenav-header">
       <mat-icon class="logo-icon">account_balance</mat-icon>
       <span class="logo-text">{{ title() }}</span>
@@ -11,6 +15,7 @@
           mat-list-item
           [routerLink]="link.path"
           routerLinkActive="active-link"
+          (click)="onNavClick()"
         >
           <mat-icon matListItemIcon>{{ link.icon }}</mat-icon>
           <span matListItemTitle>{{ link.label }}</span>
@@ -21,6 +26,11 @@
 
   <mat-sidenav-content class="app-content">
     <mat-toolbar color="primary" class="app-toolbar">
+      @if (isMobile()) {
+        <button mat-icon-button (click)="sidenav().toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
       <span>{{ title() }}</span>
     </mat-toolbar>
 

@@ -1,59 +1,85 @@
-# FinanceDashboard
+# Finance Dashboard
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.3.0.
+A personal finance tracking application built with **Angular 22**, showcasing modern Angular patterns: Signals, standalone components, zoneless change detection, Reactive Forms, and Angular Material 3.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **Dashboard** — Monthly balance overview with income/expense bar chart and spending-by-category doughnut chart
+- **Transactions** — Full CRUD with filters (month, category, search), sorting (date/amount), and debounced search
+- **Categories** — Manage spending categories with icons and colors; live preview in the dialog
+- **Budgets** — Set monthly limits per category with progress bars, 80% warnings, and over-budget alerts
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Angular 22 (standalone, zoneless) |
+| UI | Angular Material 3 (Material Design tokens) |
+| State | Signals (`signal`, `computed`, `toSignal`) |
+| Forms | Typed Reactive Forms with custom validators |
+| Charts | ng2-charts 11 + Chart.js 4 |
+| Routing | Lazy-loaded routes with `loadComponent` |
+| Tests | Vitest 5 (58 unit tests) |
+| Language | TypeScript 6, strict mode |
+
+## Architecture
+
+```
+src/app/
+├── components/      # Presentational (dumb) components — input()/output() only
+├── models/          # TypeScript interfaces (Transaction, Category, Budget)
+├── mock-data/       # Seed data (swappable for a real API)
+├── pages/           # Smart components — inject services, wire dialogs
+└── services/        # Business logic with Signals (CategoriesService, TransactionsService, BudgetsService)
+```
+
+**Smart vs Presentational**: Pages inject services and manage dialogs. Components receive data via `input.required()` and emit events via `output()`. Business logic lives in services, not components.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js ^22.22.3, ^24.15.0, or >=26.0.0
+- Angular CLI 22 (`npm install -g @angular/cli@22`)
+
+### Install & Run
 
 ```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Open [http://localhost:4200](http://localhost:4200).
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Run Tests
 
 ```bash
-ng generate component component-name
+ng test              # Watch mode
+ng test --watch=false # Single run (CI)
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+### Build for Production
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Output: `dist/finance_dashboard/browser/`
 
-## Running unit tests
+## Deployment
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+SPA rewrite configs are included for:
 
-```bash
-ng test
-```
+- **Vercel** — `vercel.json`
+- **Netlify** — `netlify.toml`
+- **Apache** — `.htaccess` (copied to dist via angular.json assets)
 
-## Running end-to-end tests
+All configs redirect unknown routes to `index.html` so client-side routing works on refresh.
 
-For end-to-end (e2e) testing, run:
+## Learning
 
-```bash
-ng e2e
-```
+See [LEARNING.md](LEARNING.md) for a glossary of Angular concepts with React/Vue/Laravel comparisons, organized by implementation step.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## License
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+MIT

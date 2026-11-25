@@ -36,4 +36,14 @@ body {
   margin: 0;
   height: 100%;
 }
-/* You can add global styles to this file, and also import other style files */
+// Smooth scrolling
+html {
+  scroll-behavior: smooth;
+}
+
+// Responsive: stack charts on small screens
+@media (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
