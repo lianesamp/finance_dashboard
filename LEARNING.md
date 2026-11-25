@@ -149,3 +149,13 @@
 - **`MatDividerModule`**: A simple horizontal line to visually separate sections. `<mat-divider />` renders a `<hr>`-like element styled to match Material Design. Used here to separate Categories from Budgets on the same page.
 
 - **`DecimalPipe`**: Angular's built-in pipe for number formatting. `{{ percentage | number: '1.0-0' }}` formats a number with at least 1 integer digit and 0 decimal places (e.g., 78.6 → "79"). React equivalent: `Math.round(percentage)` or `Intl.NumberFormat`.
+
+## Step 9: Filling Test Gaps
+
+- **Edge-case testing for computed signals**: Since Angular signals derive state reactively, edge-case tests verify the *boundaries* of that reactivity. For example: does `budgetStatuses` flag `warning: true` at exactly 80%? Does `spendingByCategory` update when a transaction is deleted? These tests confirm the signal dependency chain works correctly at boundary conditions — something easily missed with happy-path tests only.
+
+- **CRUD reactivity tests**: Unlike React (where you'd test that `setState` triggers a re-render), Angular signal tests verify that *computed* values update after *source signal* mutations. Example: calling `deleteTransaction()` updates `_transactions` → triggers `monthTransactions` → triggers `spendingByCategory`. You assert the final computed value, and the intermediate chain is implicitly tested.
+
+- **`toBeCloseTo(expected, numDigits)`**: Vitest/Jest matcher for floating-point comparison. `expect(80.0).toBeCloseTo(80, 1)` passes if the difference is less than `10^(-1) / 2 = 0.05`. Essential for financial amounts where floating-point arithmetic (e.g., `85.50 + 32.40`) can produce rounding artifacts. React testing-library uses the same matcher from Jest.
+
+- **`structuredClone()` in services**: Each `beforeEach` creates a fresh service with `structuredClone(MOCK_DATA)`, so CRUD mutations in one test don't leak into the next. Without this, test order would matter — a classic pitfall. React equivalent: re-creating state in each test's `renderHook()` call. The `structuredClone` built-in is like `JSON.parse(JSON.stringify(...))` but handles more types (Dates, Maps, etc.).

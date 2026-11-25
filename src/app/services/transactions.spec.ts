@@ -148,6 +148,70 @@ describe('TransactionsService', () => {
     });
   });
 
+  describe('sorting (edge cases)', () => {
+    it('should sort by amount descending', () => {
+      service.setSelectedMonth('2026-11');
+      service.setSortBy('amount');
+      service.setSortDirection('desc');
+      const filtered = service.filteredTransactions();
+      for (let i = 1; i < filtered.length; i++) {
+        expect(filtered[i - 1].amount >= filtered[i].amount).toBe(true);
+      }
+    });
+
+    it('should sort by date ascending', () => {
+      service.setSelectedMonth('2026-11');
+      service.setSortBy('date');
+      service.setSortDirection('asc');
+      const filtered = service.filteredTransactions();
+      for (let i = 1; i < filtered.length; i++) {
+        expect(filtered[i - 1].date <= filtered[i].date).toBe(true);
+      }
+    });
+  });
+
+  describe('CRUD reactivity', () => {
+    it('should update totals after adding an expense', () => {
+      service.setSelectedMonth('2026-11');
+      const expensesBefore = service.totalExpenses();
+      service.addTransaction({
+        description: 'Extra coffee',
+        amount: 5,
+        type: 'expense',
+        categoryId: 'cat-8',
+        date: '2026-11-25',
+      });
+      expect(service.totalExpenses()).toBe(expensesBefore + 5);
+    });
+
+    it('should update spendingByCategory after deleting an expense', () => {
+      service.setSelectedMonth('2026-11');
+      const spendingBefore = service.spendingByCategory()['cat-3'] ?? 0;
+      // Find a Nov rent expense to delete
+      const rentTx = service.transactions().find(
+        (t) => t.categoryId === 'cat-3' && t.date.startsWith('2026-11') && t.type === 'expense',
+      )!;
+      service.deleteTransaction(rentTx.id);
+      const spendingAfter = service.spendingByCategory()['cat-3'] ?? 0;
+      expect(spendingAfter).toBe(spendingBefore - rentTx.amount);
+    });
+  });
+
+  describe('filters (edge cases)', () => {
+    it('should return all month transactions when search text is empty/whitespace', () => {
+      service.setSelectedMonth('2026-11');
+      const allCount = service.filteredTransactions().length;
+      service.setSearchText('   ');
+      expect(service.filteredTransactions().length).toBe(allCount);
+    });
+
+    it('should return no transactions for a non-existent category', () => {
+      service.setSelectedMonth('2026-11');
+      service.setSelectedCategoryId('cat-nonexistent');
+      expect(service.filteredTransactions().length).toBe(0);
+    });
+  });
+
   describe('monthly totals for chart (last 6 months)', () => {
     it('should return income and expense totals for the last 6 months', () => {
       service.setSelectedMonth('2026-11');

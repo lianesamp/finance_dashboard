@@ -47,6 +47,61 @@ describe('BudgetsService', () => {
       const groceries = statuses.find((s) => s.budget.categoryId === 'cat-2');
       expect(groceries!.warning).toBe(false);
     });
+
+    it('should flag exactly at 80% as warning', () => {
+      // Transport (cat-4): spent 40 in Nov. Update existing budget limit to 50 → 40/50 = 80%
+      const existing = service.budgets().find((b) => b.categoryId === 'cat-4')!;
+      service.updateBudget({ ...existing, limit: 50 });
+      const statuses = service.budgetStatuses();
+      const transport = statuses.find((s) => s.budget.categoryId === 'cat-4');
+      expect(transport!.percentage).toBeCloseTo(80, 1);
+      expect(transport!.warning).toBe(true);
+    });
+
+    it('should handle over-budget (> 100%)', () => {
+      // Add a budget with limit lower than actual spending
+      // Rent (cat-3): spent 950 in Nov. Set limit to 500 → 190%
+      service.updateBudget({
+        ...service.budgets().find((b) => b.categoryId === 'cat-3')!,
+        limit: 500,
+      });
+      const statuses = service.budgetStatuses();
+      const rent = statuses.find((s) => s.budget.categoryId === 'cat-3');
+      expect(rent!.percentage).toBeCloseTo(190, 1);
+      expect(rent!.warning).toBe(true);
+    });
+
+    it('should return 0% when no spending in category', () => {
+      // Dining (cat-8): budget 80, spent 45 in Nov
+      // Add a budget for a category with no spending this month
+      service.addBudget({ categoryId: 'cat-1', month: '2026-11', limit: 500 });
+      const statuses = service.budgetStatuses();
+      // cat-1 is Salary (income), so no expense spending
+      const salary = statuses.find((s) => s.budget.categoryId === 'cat-1');
+      expect(salary!.spent).toBe(0);
+      expect(salary!.percentage).toBe(0);
+      expect(salary!.warning).toBe(false);
+    });
+
+    it('should only include budgets for the selected month', () => {
+      transactionsService.setSelectedMonth('2026-10');
+      const statuses = service.budgetStatuses();
+      // Mock budgets are all for 2026-11, so Oct should have none
+      expect(statuses.length).toBe(0);
+    });
+
+    it('should react to month changes', () => {
+      const novStatuses = service.budgetStatuses();
+      expect(novStatuses.length).toBeGreaterThan(0);
+
+      transactionsService.setSelectedMonth('2026-10');
+      const octStatuses = service.budgetStatuses();
+      expect(octStatuses.length).toBe(0);
+
+      // Switch back
+      transactionsService.setSelectedMonth('2026-11');
+      expect(service.budgetStatuses().length).toBeGreaterThan(0);
+    });
   });
 
   describe('CRUD', () => {
