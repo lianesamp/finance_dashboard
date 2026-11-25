@@ -1,1 +1,11 @@
-<p>income-expense-chart works!</p>
+<div class="chart-container">
+  <h3>Income vs Expenses (Last 6 Months)</h3>
+  <div class="chart-wrapper">
+    <canvas
+      baseChart
+      type="bar"
+      [data]="chartData()"
+      [options]="chartOptions"
+    ></canvas>
+  </div>
+</div>

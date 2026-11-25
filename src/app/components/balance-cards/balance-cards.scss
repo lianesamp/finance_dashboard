@@ -1,0 +1,39 @@
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.balance-card mat-card-content {
+  padding: 8px 0;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.card-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.balance-icon { color: var(--mat-sys-primary); }
+.income-icon { color: #4caf50; }
+.expense-icon { color: #f44336; }
+
+.card-label {
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.card-value {
+  font: var(--mat-sys-headline-medium);
+  display: block;
+}
+
+.positive { color: #4caf50; }
+.negative { color: #f44336; }

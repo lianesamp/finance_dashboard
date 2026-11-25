@@ -1,1 +1,37 @@
-<p>balance-cards works!</p>
+<div class="cards-grid">
+  <mat-card class="balance-card">
+    <mat-card-content>
+      <div class="card-header">
+        <mat-icon class="card-icon balance-icon">account_balance_wallet</mat-icon>
+        <span class="card-label">Balance</span>
+      </div>
+      <span class="card-value" [class.positive]="balance() >= 0" [class.negative]="balance() < 0">
+        {{ balance() | currency: 'EUR' }}
+      </span>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="balance-card">
+    <mat-card-content>
+      <div class="card-header">
+        <mat-icon class="card-icon income-icon">trending_up</mat-icon>
+        <span class="card-label">Income</span>
+      </div>
+      <span class="card-value positive">
+        {{ totalIncome() | currency: 'EUR' }}
+      </span>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="balance-card">
+    <mat-card-content>
+      <div class="card-header">
+        <mat-icon class="card-icon expense-icon">trending_down</mat-icon>
+        <span class="card-label">Expenses</span>
+      </div>
+      <span class="card-value negative">
+        {{ totalExpenses() | currency: 'EUR' }}
+      </span>
+    </mat-card-content>
+  </mat-card>
+</div>

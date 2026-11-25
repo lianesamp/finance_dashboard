@@ -125,3 +125,17 @@
 - **`MatCardModule`**: Angular Material's card component for content containers. Used here to display each category as a card in a CSS Grid layout. React equivalent: MUI's `<Card>` component.
 
 - **Reusing patterns**: The CategoryDialog follows the exact same pattern as TransactionDialog — `MAT_DIALOG_DATA` for input, `MatDialogRef.close(result)` for output, `FormGroup` for form state. The CategoriesPage follows the same pattern as TransactionsPage — smart component that opens dialogs, dumb list that emits events. Recognizing and applying patterns is a key skill in Angular development.
+
+## Step 7: Dashboard Page with Charts
+
+- **ng2-charts / Chart.js**: ng2-charts is a thin Angular wrapper around Chart.js. Chart.js is the actual charting engine (renders to `<canvas>`). ng2-charts provides the `BaseChartDirective` so you can use `<canvas baseChart>` in Angular templates. React equivalent: `react-chartjs-2` (same idea — a React wrapper for Chart.js). Vue equivalent: `vue-chartjs`.
+
+- **`provideCharts(withDefaultRegisterables())`**: Registered in `app.config.ts`. This tells Chart.js to register all its built-in chart types (bar, line, doughnut, etc.), scales, and plugins. Without this, Chart.js wouldn't know how to draw anything. React equivalent: calling `Chart.register(...)` at the top of your app.
+
+- **`BaseChartDirective`**: The ng2-charts directive you add to a `<canvas>`. You bind `type`, `[data]`, and `[options]` as properties. `type="doughnut"` or `type="bar"` selects the chart type. React equivalent: `<Doughnut data={...} options={...} />` from react-chartjs-2.
+
+- **`ChartData<'doughnut'>` and `ChartOptions<'doughnut'>`**: TypeScript types from Chart.js that ensure your data/options match the chart type. The generic parameter (`'doughnut'`, `'bar'`) constrains the allowed dataset properties. This gives you autocompletion and compile-time checks. React equivalent: same types — Chart.js types are framework-agnostic.
+
+- **`computed()` for chart data**: We use `computed()` to derive `chartData` from service signals (`spendingByCategory`, `categoryMap`). Whenever the service data changes (e.g., user switches month), the chart data recomputes and the chart re-renders. This is reactive by default — no manual subscription needed. React equivalent: `useMemo()` with the data as a dependency.
+
+- **Chart.js `callback` option**: In the bar chart, `ticks.callback: (value) => \`€${value}\`` formats Y-axis labels with the Euro sign. Chart.js options are deeply customizable — colors, legends, scales, tooltips, animations. The options object is plain JS/TS, same across all frameworks.

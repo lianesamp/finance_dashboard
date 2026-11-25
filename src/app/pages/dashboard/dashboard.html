@@ -1,1 +1,30 @@
-<p>dashboard works!</p>
+<div class="dashboard-header">
+  <h1>Dashboard</h1>
+  <mat-form-field>
+    <mat-label>Month</mat-label>
+    <mat-select
+      [value]="transactionsService.selectedMonth()"
+      (selectionChange)="onMonthChange($event.value)"
+    >
+      @for (month of availableMonths(); track month) {
+        <mat-option [value]="month">{{ month }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<app-balance-cards
+  [balance]="transactionsService.balance()"
+  [totalIncome]="transactionsService.totalIncome()"
+  [totalExpenses]="transactionsService.totalExpenses()"
+/>
+
+<div class="charts-grid">
+  <app-spending-chart
+    [spendingByCategory]="transactionsService.spendingByCategory()"
+    [categoryMap]="categoriesService.categoryMap()"
+  />
+  <app-income-expense-chart
+    [monthlyTotals]="transactionsService.monthlyTotals()"
+  />
+</div>
